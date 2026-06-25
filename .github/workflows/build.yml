@@ -20,7 +20,7 @@ jobs:
         run: |
           cd vehicle/OVMS.V3
           cp support/sdkconfig.default.hw31 sdkconfig
-          docker run --rm -v ${{ github.workspace }}/vehicle/OVMS.V3:/project -w /project openvehicles/ovms3-build make
+          docker run --rm -v ${{ github.workspace }}/vehicle/OVMS.V3:/project -w /project espressif/idf:release-v3.3 make
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
