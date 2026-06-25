@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -23,7 +23,7 @@ jobs:
           docker run --rm -v ${{ github.workspace }}/vehicle/OVMS.V3:/project -w /project openvehicles/ovms3-build make
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ovms3-firmware
           path: vehicle/OVMS.V3/build/ovms3.bin
