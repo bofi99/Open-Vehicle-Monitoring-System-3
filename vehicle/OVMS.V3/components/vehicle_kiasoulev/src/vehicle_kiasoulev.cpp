@@ -473,6 +473,15 @@ void OvmsVehicleKiaSoulEv::ConfigChanged(OvmsConfigParam* param)
   ks_battery_capacity = (float)MyConfig.GetParamValueInt("xks", "cap_act_kwh", CGF_DEFAULT_BATTERY_CAPACITY);
   ks_key_fob_open_charge_port = (bool)MyConfig.GetParamValueBool("xks", "remote_charge_port", true);
 
+  if (ks_battery_capacity > 29000)
+    {
+    BmsSetCellArrangementVoltage(100, 1);
+    }
+  else
+    {
+    BmsSetCellArrangementVoltage(96, 1);
+    }
+
   ks_maxrange = MyConfig.GetParamValueInt("xks", "maxrange", CFG_DEFAULT_MAXRANGE);
   if (ks_maxrange <= 0)
     ks_maxrange = CFG_DEFAULT_MAXRANGE;
@@ -907,7 +916,15 @@ uint16_t OvmsVehicleKiaSoulEv::calcMinutesRemaining(float target)
 void OvmsVehicleKiaSoulEv::UpdateMaxRangeAndSOH(void)
 	{
 	//Update State of Health using following assumption: 10% buffer
-	StdMetrics.ms_v_bat_soh->SetValue( 110 - ( m_b_cell_det_max->AsFloat(0) + m_b_cell_det_min->AsFloat(0)) / 2 );
+	if (ks_battery_capacity > 29000)
+		{
+		// Das Gen2 BMS (30kWh) liefert den SOH direkt im ersten Byte-Paar von PID 0x05 / mlframe 4
+		StdMetrics.ms_v_bat_soh->SetValue( m_b_cell_det_max->AsFloat(100) );
+		}
+	else
+		{
+		StdMetrics.ms_v_bat_soh->SetValue( 110 - ( m_b_cell_det_max->AsFloat(0) + m_b_cell_det_min->AsFloat(0)) / 2 );
+		}
 	StdMetrics.ms_v_bat_cac->SetValue( (ks_battery_capacity * BAT_SOH * BAT_SOC/10000.0) / 400, AmpHours);
 
 	float maxRange = ks_maxrange;// * MIN(BAT_SOH,100) / 100.0;

@@ -304,7 +304,8 @@ void OvmsVehicleKiaSoulEv::IncomingBMC(canbus* bus, uint16_t type, uint16_t pid,
 			if(mlframe>0)
 				{
 				base = ((pid-2)*32) + (mlframe-1) * 7;
-				for (bVal = 0; bVal < length && ((base + bVal)<96); bVal++)
+				int cell_limit = (ks_battery_capacity > 29000) ? 100 : 96;
+				for (bVal = 0; bVal < length && ((base + bVal)<cell_limit); bVal++)
 					{
 					//ESP_LOGI(TAG, "[%d %d] = %f", pid, base+bVal, (float)CAN_BYTE(bVal) * 0.02);
 					BmsSetCellVoltage((uint8_t)(base + bVal), (float)CAN_BYTE(bVal) * 0.02);
@@ -316,7 +317,8 @@ void OvmsVehicleKiaSoulEv::IncomingBMC(canbus* bus, uint16_t type, uint16_t pid,
 			if (mlframe == 1)
 				{
 				base = 95;
-				for (bVal = 0; bVal < length && ((base + bVal)<96); bVal++)
+				int cell_limit = (ks_battery_capacity > 29000) ? 100 : 96;
+				for (bVal = 0; bVal < length && ((base + bVal)<cell_limit); bVal++)
 					{
 					if(CAN_BYTE(bVal)!=0 ) // For 30kWh version.
 						{
